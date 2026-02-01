@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 PARALLEL_UPDATES = 0
 
 
-def _nested_get(data: dict, *keys: str, default: Any = 0) -> Any:
+def _nested_get(data: dict[str, Any], *keys: str, default: Any = 0) -> Any:
     """Get nested dict value safely."""
     for key in keys:
         if not isinstance(data, dict):
@@ -35,7 +35,9 @@ def _nested_get(data: dict, *keys: str, default: Any = 0) -> Any:
     return data if data != {} else default
 
 
-def _get_device_info(coordinator: GhostDataUpdateCoordinator, entry: GhostConfigEntry) -> dict:
+def _get_device_info(
+    coordinator: GhostDataUpdateCoordinator, entry: GhostConfigEntry
+) -> dict[str, Any]:
     """Get device info for Ghost sensors."""
     return {
         "identifiers": {(DOMAIN, entry.entry_id)},
@@ -46,7 +48,7 @@ def _get_device_info(coordinator: GhostDataUpdateCoordinator, entry: GhostConfig
     }
 
 
-def _get_mrr_value(data: dict) -> int | None:
+def _get_mrr_value(data: dict[str, Any]) -> int | None:
     """Extract MRR value, converting cents to whole dollars."""
     mrr_data = data.get("mrr", {})
     if not mrr_data:
@@ -59,8 +61,8 @@ def _get_mrr_value(data: dict) -> int | None:
 class GhostSensorEntityDescription(SensorEntityDescription):
     """Describes a Ghost sensor entity."""
 
-    value_fn: Callable[[dict], Any]
-    extra_attrs_fn: Callable[[dict], dict[str, Any] | None] | None = None
+    value_fn: Callable[[dict[str, Any]], Any]
+    extra_attrs_fn: Callable[[dict[str, Any]], dict[str, Any] | None] | None = None
 
 
 SENSORS: tuple[GhostSensorEntityDescription, ...] = (
@@ -326,7 +328,7 @@ class GhostNewsletterSensorEntity(CoordinatorEntity[GhostDataUpdateCoordinator],
         self._attr_name = f"{newsletter_name} Subscribers"
         self._attr_device_info = _get_device_info(coordinator, entry)
 
-    def _get_newsletter_by_id(self) -> dict | None:
+    def _get_newsletter_by_id(self) -> dict[str, Any] | None:
         """Get newsletter data by ID."""
         newsletters = self.coordinator.data.get("newsletters", [])
         return next((n for n in newsletters if n.get("id") == self._newsletter_id), None)
@@ -335,7 +337,8 @@ class GhostNewsletterSensorEntity(CoordinatorEntity[GhostDataUpdateCoordinator],
     def native_value(self) -> int | None:
         """Return the subscriber count for this newsletter."""
         if newsletter := self._get_newsletter_by_id():
-            return newsletter.get("count", {}).get("members", 0)
+            count: int = newsletter.get("count", {}).get("members", 0)
+            return count
         return None
 
     @property

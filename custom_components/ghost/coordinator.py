@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from aioghost import GhostAdminAPI
 from aioghost.exceptions import GhostAuthError, GhostError
@@ -43,7 +43,7 @@ class GhostDataUpdateCoordinator(DataUpdateCoordinator[dict]):
             update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
         )
 
-    async def _async_update_data(self) -> dict:
+    async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from Ghost API."""
         try:
             (

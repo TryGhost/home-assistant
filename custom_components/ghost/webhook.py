@@ -15,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _handle_content_webhook(
-    payload: dict,
+    payload: dict[str, Any],
     content_type: str,  # "post" or "page"
 ) -> tuple[str, dict[str, Any]]:
     """Handle post or page webhook payload. Returns (event_type, event_data)."""

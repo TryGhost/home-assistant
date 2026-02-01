@@ -43,7 +43,7 @@ class GhostRuntimeData:
 def _get_external_url(hass: HomeAssistant) -> str | None:
     """Try to get an external URL for webhooks."""
     try:
-        url = get_url(hass, allow_internal=False, prefer_cloud=True)
+        url: str = get_url(hass, allow_internal=False, prefer_cloud=True)
         if url and url.startswith("https://"):
             return url
     except NoURLAvailableError:
@@ -125,7 +125,8 @@ async def _setup_webhooks(
 
 async def async_unload_entry(hass: HomeAssistant, entry: GhostConfigEntry) -> bool:
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+    unload_ok: bool = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
         runtime_data = entry.runtime_data
 
         for webhook_id in runtime_data.ghost_webhook_ids:

@@ -138,7 +138,8 @@ class GhostConfigFlow(ConfigFlow, domain=DOMAIN):
         """
         api = GhostAdminAPI(api_url, admin_api_key)
         try:
-            return await api.get_site()
+            result: dict[str, Any] = await api.get_site()
+            return result
         finally:
             await api.close()
 
