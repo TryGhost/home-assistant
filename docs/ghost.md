@@ -134,6 +134,12 @@ automation:
           message: "You now have {{ trigger.to_state.state }} members!"
 ```
 
+## Known limitations
+
+- Webhook events require your Home Assistant instance to be accessible via HTTPS (e.g., via Nabu Casa). Without HTTPS, only polling updates are available.
+- Revenue metrics (MRR/ARR) are only available for sites with Stripe connected.
+- ActivityPub/SocialWeb metrics require Ghost 5.x or later with ActivityPub enabled.
+
 ## Removing the integration
 
 This integration follows standard integration removal. No extra steps are required.
