@@ -105,22 +105,22 @@ async def handle_webhook(
         # Ghost webhook logic:
         # - member.added: current has data, previous is empty {}
         # - member.deleted: current is empty {}, previous has data
-        # - member.updated: current has data, previous has changed fields only
+        # - member.edited: ignored (too high volume - fires on email opens/clicks)
         if not current:
             event_type = "ghost_member_deleted"
         elif not previous:
             event_type = "ghost_member_added"
-        else:
-            event_type = "ghost_member_updated"
+        # else: member.edited - intentionally ignored
         
-        # Include useful member data
-        member_data = current or previous
-        event_data.update({
-            "member_id": member_data.get("id"),
-            "email": member_data.get("email"),
-            "name": member_data.get("name"),
-            "status": member_data.get("status"),
-        })
+        # Include useful member data (only for add/delete)
+        if event_type:
+            member_data = current or previous
+            event_data.update({
+                "member_id": member_data.get("id"),
+                "email": member_data.get("email"),
+                "name": member_data.get("name"),
+                "status": member_data.get("status"),
+            })
     
     elif "post" in payload:
         event_type, extra_data = _handle_content_webhook(payload, "post")
