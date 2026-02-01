@@ -18,6 +18,22 @@
       "already_configured": "This Ghost site is already configured."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ghost Webhooks",
+        "description": "Enable real-time events from Ghost. Events: {events}\n\nEnter your Home Assistant external URL (e.g. https://your-ha.duckdns.org or Nabu Casa URL).",
+        "data": {
+          "enable_webhooks": "Enable webhooks",
+          "webhook_url": "Home Assistant external URL"
+        }
+      }
+    },
+    "error": {
+      "webhook_url_required": "External URL is required when webhooks are enabled.",
+      "webhook_creation_failed": "Failed to create webhooks in Ghost."
+    }
+  },
   "entity": {
     "sensor": {
       "total_members": {

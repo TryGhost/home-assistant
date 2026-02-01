@@ -72,6 +72,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if external_url:
         await _setup_webhooks(hass, entry, api, site_title, external_url)
         hass.data[DOMAIN][entry.entry_id][WEBHOOKS_ENABLED] = True
+        _LOGGER.info("Ghost webhooks enabled for %s", site_title)
     else:
         _LOGGER.debug("No external URL available, webhooks disabled for %s", site_title)
 

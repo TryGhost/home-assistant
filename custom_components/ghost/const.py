@@ -4,6 +4,8 @@ DOMAIN = "ghost"
 
 CONF_ADMIN_API_KEY = "admin_api_key"
 CONF_API_URL = "api_url"
+CONF_ENABLE_WEBHOOKS = "enable_webhooks"
+CONF_WEBHOOK_URL = "webhook_url"
 
 DEFAULT_SCAN_INTERVAL = 300  # 5 minutes
 

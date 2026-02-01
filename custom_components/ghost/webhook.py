@@ -74,12 +74,16 @@ async def handle_webhook(
         current = member.get("current", {})
         previous = member.get("previous", {})
         
-        if not previous or previous.get("id") is None:
-            event_type = "ghost_member_added"
-        elif not current or current.get("id") is None:
+        # Ghost webhook logic:
+        # - member.added: current has data, previous is empty {}
+        # - member.deleted: current is empty {}, previous has data
+        # - member.updated: current has data, previous has changed fields only
+        if not current:
             event_type = "ghost_member_deleted"
+        elif not previous:
+            event_type = "ghost_member_added"
         else:
-            event_type = "ghost_member_edited"
+            event_type = "ghost_member_updated"
         
         # Include useful member data
         member_data = current or previous
@@ -140,9 +144,9 @@ async def handle_webhook(
         })
     
     if event_type:
-        _LOGGER.debug("Firing event %s with data %s", event_type, event_data)
+        _LOGGER.info("Ghost webhook: %s", event_type)
         hass.bus.async_fire(event_type, event_data)
     else:
-        _LOGGER.warning("Unknown webhook payload structure: %s", list(payload.keys()))
+        _LOGGER.warning("Unknown Ghost webhook payload: %s", list(payload.keys()))
     
     return web.Response(status=200, text="OK")
