@@ -7,10 +7,6 @@
         "data": {
           "api_url": "API URL",
           "admin_api_key": "Admin API Key"
-        },
-        "data_description": {
-          "api_url": "The URL of your Ghost site (e.g., https://example.com)",
-          "admin_api_key": "Your Admin API key in the format id:secret"
         }
       }
     },
