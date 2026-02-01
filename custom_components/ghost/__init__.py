@@ -12,7 +12,7 @@ from homeassistant.helpers.network import get_url, NoURLAvailableError
 from .api import GhostAdminAPI
 from .const import (
     CONF_ADMIN_API_KEY,
-    CONF_SITE_URL,
+    CONF_API_URL,
     DOMAIN,
     WEBHOOK_EVENTS,
 )
@@ -43,7 +43,7 @@ def _get_external_url(hass: HomeAssistant) -> str | None:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Ghost from a config entry."""
-    site_url = entry.data[CONF_SITE_URL]
+    site_url = entry.data[CONF_API_URL]
     admin_api_key = entry.data[CONF_ADMIN_API_KEY]
 
     api = GhostAdminAPI(site_url, admin_api_key)

@@ -10,13 +10,13 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 
 from .api import GhostAdminAPI
-from .const import CONF_ADMIN_API_KEY, CONF_SITE_URL, DOMAIN
+from .const import CONF_ADMIN_API_KEY, CONF_API_URL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_SITE_URL): str,
+        vol.Required(CONF_API_URL): str,
         vol.Required(CONF_ADMIN_API_KEY): str,
     }
 )
@@ -34,7 +34,7 @@ class GhostConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         
         if user_input is not None:
-            site_url = user_input[CONF_SITE_URL].rstrip("/")
+            site_url = user_input[CONF_API_URL].rstrip("/")
             admin_api_key = user_input[CONF_ADMIN_API_KEY]
             
             # Validate the API key format
@@ -54,7 +54,7 @@ class GhostConfigFlow(ConfigFlow, domain=DOMAIN):
                     return self.async_create_entry(
                         title=site_title,
                         data={
-                            CONF_SITE_URL: site_url,
+                            CONF_API_URL: site_url,
                             CONF_ADMIN_API_KEY: admin_api_key,
                         },
                     )
