@@ -23,7 +23,7 @@ The **Ghost** {% term integration %} allows you to monitor your [Ghost](https://
 
 ### Create a Ghost Admin API integration
 
-1. Create a new custom integration in **Ghost Admin → Settings → Integrations → Custom**.
+1. [Create a new custom integration in Ghost](/ghost/#/settings/integrations/new).
 2. Give it a name (e.g., "Home Assistant").
 3. Copy the **API URL**.
 4. Copy the **Admin API Key**.
