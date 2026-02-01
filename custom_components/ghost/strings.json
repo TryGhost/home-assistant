@@ -10,7 +10,7 @@
         },
         "data_description": {
           "api_url": "The URL of your Ghost site (e.g., https://yoursite.ghost.io)",
-          "admin_api_key": "Found in Ghost Admin → Settings → Integrations → Add custom integration"
+          "admin_api_key": "Found in Ghost Admin → Settings → Integrations"
         }
       },
       "reauth_confirm": {
@@ -20,13 +20,13 @@
           "admin_api_key": "Admin API Key"
         },
         "data_description": {
-          "admin_api_key": "Found in Ghost Admin → Settings → Integrations → Add custom integration"
+          "admin_api_key": "Found in Ghost Admin → Settings → Integrations"
         }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to Ghost. Please check your URL.",
-      "invalid_api_key": "Invalid API key format. The key should be in the format id:secret.",
+      "invalid_api_key": "Invalid API key. Please check your credentials.",
       "invalid_auth": "Invalid API key. Please check your credentials.",
       "unknown": "An unexpected error occurred."
     },

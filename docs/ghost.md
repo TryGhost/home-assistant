@@ -29,8 +29,6 @@ The **Ghost** {% term integration %} allows you to monitor your [Ghost](https://
 4. Give it a name (e.g., "Home Assistant").
 5. Copy the **Admin API Key** — you'll need this during setup.
 
-The Admin API Key is in the format `id:secret` (e.g., `6489...ab12:a8f9...3d4e`).
-
 {% include integrations/config_flow.md %}
 
 ## Configuration parameters
@@ -39,7 +37,7 @@ The Admin API Key is in the format `id:secret` (e.g., `6489...ab12:a8f9...3d4e`)
 API URL:
   description: The URL of your Ghost site (e.g., `https://yoursite.ghost.io` or `https://blog.example.com`).
 Admin API Key:
-  description: The Admin API Key from your Ghost custom integration. Found in Ghost Admin → Settings → Integrations.
+  description: The Admin API Key from your Ghost custom integration.
 {% endconfiguration_basic %}
 
 ## Sensors
@@ -151,23 +149,3 @@ automation:
 This integration follows standard integration removal. No extra steps are required.
 
 {% include integrations/remove_device_service.md %}
-
-## Troubleshooting
-
-### Cannot connect to Ghost
-
-- Verify your Ghost site URL is correct and accessible
-- Ensure you're using `https://` (not `http://`)
-- Check that your Ghost site is online
-
-### Invalid API key
-
-- The Admin API Key must be in the format `id:secret`
-- Verify you copied the full key from Ghost Admin
-- Try creating a new custom integration in Ghost
-
-### Sensors showing unknown
-
-- Some sensors (like MRR) require a paid Ghost(Pro) plan or Stripe integration
-- Email metrics require at least one newsletter to have been sent
-- SocialWeb metrics require ActivityPub to be enabled in Ghost Labs
