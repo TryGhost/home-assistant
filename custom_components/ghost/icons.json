@@ -1,0 +1,66 @@
+{
+  "entity": {
+    "sensor": {
+      "total_members": {
+        "default": "mdi:account-group"
+      },
+      "paid_members": {
+        "default": "mdi:account-cash"
+      },
+      "free_members": {
+        "default": "mdi:account-outline"
+      },
+      "comped_members": {
+        "default": "mdi:account-star"
+      },
+      "mrr": {
+        "default": "mdi:cash-multiple"
+      },
+      "arr": {
+        "default": "mdi:cash-multiple"
+      },
+      "published_posts": {
+        "default": "mdi:post"
+      },
+      "draft_posts": {
+        "default": "mdi:file-edit-outline"
+      },
+      "scheduled_posts": {
+        "default": "mdi:clock-outline"
+      },
+      "latest_post": {
+        "default": "mdi:newspaper"
+      },
+      "latest_email": {
+        "default": "mdi:email-newsletter"
+      },
+      "latest_email_sent": {
+        "default": "mdi:send"
+      },
+      "latest_email_opened": {
+        "default": "mdi:email-open"
+      },
+      "latest_email_open_rate": {
+        "default": "mdi:email-open-outline"
+      },
+      "latest_email_clicked": {
+        "default": "mdi:cursor-default-click"
+      },
+      "latest_email_click_rate": {
+        "default": "mdi:cursor-default-click-outline"
+      },
+      "socialweb_followers": {
+        "default": "mdi:account-multiple"
+      },
+      "socialweb_following": {
+        "default": "mdi:account-multiple-outline"
+      },
+      "total_comments": {
+        "default": "mdi:comment-multiple"
+      },
+      "newsletter_subscribers": {
+        "default": "mdi:email-newsletter"
+      }
+    }
+  }
+}

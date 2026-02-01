@@ -104,6 +104,44 @@ class GhostConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle reconfiguration of the API URL."""
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        assert entry is not None
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            api_url = user_input[CONF_API_URL].rstrip("/")
+            admin_api_key = entry.data[CONF_ADMIN_API_KEY]
+
+            try:
+                await self._validate_credentials(api_url, admin_api_key)
+                return self.async_update_reload_and_abort(
+                    entry,
+                    data={**entry.data, CONF_API_URL: api_url},
+                )
+            except GhostAuthError:
+                errors["base"] = "invalid_auth"
+            except GhostError:
+                errors["base"] = "cannot_connect"
+            except Exception:
+                _LOGGER.exception("Unexpected error during Ghost reconfigure")
+                errors["base"] = "unknown"
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_API_URL, default=entry.data[CONF_API_URL]
+                    ): str,
+                }
+            ),
+            errors=errors,
+        )
+
     async def _validate_credentials(
         self, api_url: str, admin_api_key: str
     ) -> dict[str, Any]:

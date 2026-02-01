@@ -1,4 +1,15 @@
 {
+  "exceptions": {
+    "invalid_api_key": {
+      "message": "Invalid API key"
+    },
+    "cannot_connect": {
+      "message": "Failed to connect to Ghost: {error}"
+    },
+    "api_error": {
+      "message": "Error communicating with Ghost API: {error}"
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -22,6 +33,16 @@
         "data_description": {
           "admin_api_key": "Ghost Admin → Settings → Integrations → Custom"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Ghost",
+        "description": "Update the API URL for your Ghost site.",
+        "data": {
+          "api_url": "API URL"
+        },
+        "data_description": {
+          "api_url": "Ghost Admin → Settings → Integrations → Custom"
+        }
       }
     },
     "error": {
@@ -32,7 +53,8 @@
     },
     "abort": {
       "already_configured": "This Ghost site is already configured.",
-      "reauth_successful": "Reauthentication successful."
+      "reauth_successful": "Reauthentication successful.",
+      "reconfigure_successful": "Reconfiguration successful."
     }
   },
   "entity": {
@@ -93,6 +115,9 @@
       },
       "arr": {
         "name": "ARR"
+      },
+      "newsletter_subscribers": {
+        "name": "{newsletter_name} Subscribers"
       }
     }
   }

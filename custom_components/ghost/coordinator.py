@@ -81,6 +81,13 @@ class GhostDataUpdateCoordinator(DataUpdateCoordinator[dict]):
                 "newsletters": newsletters,
             }
         except GhostAuthError as err:
-            raise ConfigEntryAuthFailed("Invalid API key") from err
+            raise ConfigEntryAuthFailed(
+                translation_domain=DOMAIN,
+                translation_key="invalid_api_key",
+            ) from err
         except GhostError as err:
-            raise UpdateFailed(f"Error communicating with Ghost API: {err}") from err
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="api_error",
+                translation_placeholders={"error": str(err)},
+            ) from err

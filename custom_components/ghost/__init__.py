@@ -18,6 +18,7 @@ from .const import (
     CONF_ADMIN_API_KEY,
     CONF_API_URL,
     DEFAULT_TITLE,
+    DOMAIN,
     WEBHOOK_EVENTS,
 )
 from .coordinator import GhostDataUpdateCoordinator
@@ -63,10 +64,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: GhostConfigEntry) -> boo
         site_title = site.get("title", DEFAULT_TITLE)
     except GhostAuthError as err:
         await api.close()
-        raise ConfigEntryAuthFailed("Invalid API key") from err
+        raise ConfigEntryAuthFailed(
+            translation_domain=DOMAIN,
+            translation_key="invalid_api_key",
+        ) from err
     except GhostError as err:
         await api.close()
-        raise ConfigEntryNotReady(f"Failed to connect to Ghost: {err}") from err
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN,
+            translation_key="cannot_connect",
+            translation_placeholders={"error": str(err)},
+        ) from err
 
     coordinator = GhostDataUpdateCoordinator(hass, api, site_title)
     await coordinator.async_config_entry_first_refresh()

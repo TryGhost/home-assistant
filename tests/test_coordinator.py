@@ -65,8 +65,9 @@ async def test_coordinator_auth_error(hass: HomeAssistant) -> None:
 
     coordinator = GhostDataUpdateCoordinator(hass, mock_api, "Test Ghost")
 
-    with pytest.raises(ConfigEntryAuthFailed):
+    with pytest.raises(ConfigEntryAuthFailed) as exc_info:
         await coordinator._async_update_data()
+    assert exc_info.value.translation_key == "invalid_api_key"
 
 
 async def test_coordinator_connection_error(hass: HomeAssistant) -> None:
@@ -86,8 +87,9 @@ async def test_coordinator_connection_error(hass: HomeAssistant) -> None:
 
     coordinator = GhostDataUpdateCoordinator(hass, mock_api, "Test Ghost")
 
-    with pytest.raises(UpdateFailed, match="Error communicating with Ghost API"):
+    with pytest.raises(UpdateFailed) as exc_info:
         await coordinator._async_update_data()
+    assert exc_info.value.translation_key == "api_error"
 
 
 async def test_coordinator_generic_error(hass: HomeAssistant) -> None:
@@ -107,8 +109,9 @@ async def test_coordinator_generic_error(hass: HomeAssistant) -> None:
 
     coordinator = GhostDataUpdateCoordinator(hass, mock_api, "Test Ghost")
 
-    with pytest.raises(UpdateFailed):
+    with pytest.raises(UpdateFailed) as exc_info:
         await coordinator._async_update_data()
+    assert exc_info.value.translation_key == "api_error"
 
 
 async def test_coordinator_name(hass: HomeAssistant, mock_ghost_api: AsyncMock) -> None:

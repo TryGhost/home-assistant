@@ -278,3 +278,91 @@ async def test_form_unknown_error(hass: HomeAssistant) -> None:
 
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"base": "unknown"}
+
+
+async def test_reconfigure_flow(
+    hass: HomeAssistant, mock_ghost_api: AsyncMock, mock_config_entry
+) -> None:
+    """Test the reconfigure flow."""
+    mock_config_entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": config_entries.SOURCE_RECONFIGURE,
+            "entry_id": mock_config_entry.entry_id,
+        },
+    )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+
+    new_api_url = "https://new-ghost.example.com"
+
+    with patch(
+        "custom_components.ghost.config_flow.GhostAdminAPI",
+        return_value=mock_ghost_api,
+    ):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_API_URL: new_api_url},
+        )
+        await hass.async_block_till_done()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert mock_config_entry.data[CONF_API_URL] == new_api_url
+
+
+async def test_reconfigure_flow_invalid_auth(
+    hass: HomeAssistant, mock_ghost_api_auth_error: AsyncMock, mock_config_entry
+) -> None:
+    """Test the reconfigure flow with invalid auth (API key doesn't work with new URL)."""
+    mock_config_entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": config_entries.SOURCE_RECONFIGURE,
+            "entry_id": mock_config_entry.entry_id,
+        },
+    )
+
+    with patch(
+        "custom_components.ghost.config_flow.GhostAdminAPI",
+        return_value=mock_ghost_api_auth_error,
+    ):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_API_URL: "https://new-ghost.example.com"},
+        )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "invalid_auth"}
+
+
+async def test_reconfigure_flow_connection_error(
+    hass: HomeAssistant, mock_ghost_api_connection_error: AsyncMock, mock_config_entry
+) -> None:
+    """Test the reconfigure flow with connection error."""
+    mock_config_entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": config_entries.SOURCE_RECONFIGURE,
+            "entry_id": mock_config_entry.entry_id,
+        },
+    )
+
+    with patch(
+        "custom_components.ghost.config_flow.GhostAdminAPI",
+        return_value=mock_ghost_api_connection_error,
+    ):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_API_URL: "https://new-ghost.example.com"},
+        )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "cannot_connect"}

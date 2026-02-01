@@ -71,7 +71,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="total_members",
         translation_key="total_members",
         name="Total Members",
-        icon="mdi:account-group",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "members", "total"),
     ),
@@ -79,7 +78,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="paid_members",
         translation_key="paid_members",
         name="Paid Members",
-        icon="mdi:account-cash",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "members", "paid"),
     ),
@@ -87,7 +85,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="free_members",
         translation_key="free_members",
         name="Free Members",
-        icon="mdi:account-outline",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "members", "free"),
     ),
@@ -95,7 +92,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="comped_members",
         translation_key="comped_members",
         name="Comped Members",
-        icon="mdi:account-star",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "members", "comped"),
     ),
@@ -104,7 +100,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="mrr",
         translation_key="mrr",
         name="MRR",
-        icon="mdi:cash-multiple",
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.TOTAL,
         native_unit_of_measurement=CURRENCY,
@@ -115,7 +110,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="arr",
         translation_key="arr",
         name="ARR",
-        icon="mdi:cash-multiple",
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.TOTAL,
         native_unit_of_measurement=CURRENCY,
@@ -127,7 +121,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="published_posts",
         translation_key="published_posts",
         name="Published Posts",
-        icon="mdi:post",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "posts", "published"),
     ),
@@ -135,7 +128,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="draft_posts",
         translation_key="draft_posts",
         name="Draft Posts",
-        icon="mdi:file-edit-outline",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "posts", "drafts"),
     ),
@@ -143,7 +135,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="scheduled_posts",
         translation_key="scheduled_posts",
         name="Scheduled Posts",
-        icon="mdi:clock-outline",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "posts", "scheduled"),
     ),
@@ -151,7 +142,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="latest_post",
         translation_key="latest_post",
         name="Latest Post",
-        icon="mdi:newspaper",
         value_fn=lambda data: (
             data.get("latest_post", {}).get("title")
             if data.get("latest_post")
@@ -172,7 +162,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="latest_email",
         translation_key="latest_email",
         name="Latest Email",
-        icon="mdi:email-newsletter",
         value_fn=lambda data: (
             data.get("latest_email", {}).get("title")
             if data.get("latest_email")
@@ -198,7 +187,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="latest_email_sent",
         translation_key="latest_email_sent",
         name="Latest Email Sent",
-        icon="mdi:send",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: (
             data.get("latest_email", {}).get("email_count")
@@ -210,7 +198,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="latest_email_opened",
         translation_key="latest_email_opened",
         name="Latest Email Opened",
-        icon="mdi:email-open",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: (
             data.get("latest_email", {}).get("opened_count")
@@ -222,7 +209,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="latest_email_open_rate",
         translation_key="latest_email_open_rate",
         name="Latest Email Open Rate",
-        icon="mdi:email-open-outline",
         native_unit_of_measurement="%",
         value_fn=lambda data: (
             data.get("latest_email", {}).get("open_rate")
@@ -234,7 +220,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="latest_email_clicked",
         translation_key="latest_email_clicked",
         name="Latest Email Clicked",
-        icon="mdi:cursor-default-click",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: (
             data.get("latest_email", {}).get("clicked_count")
@@ -246,7 +231,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="latest_email_click_rate",
         translation_key="latest_email_click_rate",
         name="Latest Email Click Rate",
-        icon="mdi:cursor-default-click-outline",
         native_unit_of_measurement="%",
         value_fn=lambda data: (
             data.get("latest_email", {}).get("click_rate")
@@ -259,7 +243,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="socialweb_followers",
         translation_key="socialweb_followers",
         name="SocialWeb Followers",
-        icon="mdi:account-multiple",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "activitypub", "followers"),
     ),
@@ -267,7 +250,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="socialweb_following",
         translation_key="socialweb_following",
         name="SocialWeb Following",
-        icon="mdi:account-multiple-outline",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: _nested_get(data, "activitypub", "following"),
     ),
@@ -276,7 +258,6 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         key="total_comments",
         translation_key="total_comments",
         name="Total Comments",
-        icon="mdi:comment-multiple",
         state_class=SensorStateClass.TOTAL,
         value_fn=lambda data: data.get("comments", 0),
     ),
@@ -347,7 +328,7 @@ class GhostNewsletterSensorEntity(
     """Representation of a Ghost newsletter subscriber sensor."""
 
     _attr_has_entity_name = True
-    _attr_icon = "mdi:email-newsletter"
+    _attr_translation_key = "newsletter_subscribers"
     _attr_state_class = SensorStateClass.TOTAL
 
     def __init__(
