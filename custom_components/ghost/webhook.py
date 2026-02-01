@@ -70,7 +70,7 @@ async def async_register_webhook(
     return webhook_id
 
 
-async def async_unregister_webhook(hass: HomeAssistant, entry_id: str) -> None:
+def async_unregister_webhook(hass: HomeAssistant, entry_id: str) -> None:
     """Unregister the webhook."""
     webhook_id = get_webhook_id(entry_id)
     async_unregister(hass, webhook_id)

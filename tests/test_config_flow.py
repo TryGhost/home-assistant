@@ -107,29 +107,18 @@ async def test_form_cannot_connect(
     assert result["errors"] == {"base": "cannot_connect"}
 
 
-@pytest.mark.skip(reason="MockConfigEntry unique_id registry issue - TODO fix")
 async def test_form_already_configured(
-    hass: HomeAssistant, mock_ghost_api: AsyncMock
+    hass: HomeAssistant, mock_config_entry, mock_ghost_api: AsyncMock
 ) -> None:
     """Test error when already configured."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
-
-    # Create and add first entry
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        title="Test Ghost",
-        data={
-            CONF_API_URL: API_URL,
-            CONF_ADMIN_API_KEY: API_KEY,
-        },
-        unique_id=API_URL,
-    )
-    entry.add_to_hass(hass)
+    # Add existing entry to hass
+    mock_config_entry.add_to_hass(hass)
 
     # Try to configure a second entry with same URL
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
+    assert result["type"] is FlowResultType.FORM
 
     with patch(
         "custom_components.ghost.config_flow.GhostAdminAPI",
@@ -208,3 +197,84 @@ async def test_reauth_flow_invalid_auth(
 
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"base": "invalid_auth"}
+
+
+async def test_reauth_flow_invalid_api_key_format(
+    hass: HomeAssistant, mock_config_entry
+) -> None:
+    """Test the reauth flow with invalid API key format (no colon)."""
+    mock_config_entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": config_entries.SOURCE_REAUTH,
+            "entry_id": mock_config_entry.entry_id,
+        },
+        data=mock_config_entry.data,
+    )
+
+    # Try with API key that has no colon
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {CONF_ADMIN_API_KEY: "invalidkeynocolor"},
+    )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "invalid_api_key"}
+
+
+async def test_reauth_flow_connection_error(
+    hass: HomeAssistant, mock_ghost_api_connection_error: AsyncMock, mock_config_entry
+) -> None:
+    """Test the reauth flow with connection error."""
+    mock_config_entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": config_entries.SOURCE_REAUTH,
+            "entry_id": mock_config_entry.entry_id,
+        },
+        data=mock_config_entry.data,
+    )
+
+    with patch(
+        "custom_components.ghost.config_flow.GhostAdminAPI",
+        return_value=mock_ghost_api_connection_error,
+    ):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_ADMIN_API_KEY: API_KEY},
+        )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "cannot_connect"}
+
+
+async def test_form_unknown_error(hass: HomeAssistant) -> None:
+    """Test handling of unexpected exception during setup."""
+    from unittest.mock import MagicMock
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+
+    mock_api = MagicMock()
+    mock_api.get_site = AsyncMock(side_effect=RuntimeError("Unexpected"))
+    mock_api.close = AsyncMock()
+
+    with patch(
+        "custom_components.ghost.config_flow.GhostAdminAPI",
+        return_value=mock_api,
+    ):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {
+                CONF_API_URL: API_URL,
+                CONF_ADMIN_API_KEY: API_KEY,
+            },
+        )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "unknown"}

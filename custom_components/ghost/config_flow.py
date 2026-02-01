@@ -10,6 +10,7 @@ from aioghost.exceptions import GhostAuthError, GhostError
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult
+from homeassistant.data_entry_flow import AbortFlow
 
 from .const import CONF_ADMIN_API_KEY, CONF_API_URL, DOMAIN
 
@@ -125,6 +126,8 @@ class GhostConfigFlow(ConfigFlow, domain=DOMAIN):
                     CONF_ADMIN_API_KEY: admin_api_key,
                 },
             )
+        except AbortFlow:
+            raise
         except GhostAuthError:
             errors["base"] = "invalid_auth"
         except GhostError:

@@ -1,14 +1,26 @@
 """Tests for Ghost sensors."""
 
+from datetime import timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from homeassistant.core import HomeAssistant
+from homeassistant.util import dt as dt_util
 
 from custom_components.ghost.const import DOMAIN
 
 from .conftest import API_URL
+
+try:
+    from homeassistant.helpers.entity_component import async_update_entity
+except ImportError:
+    async_update_entity = None
+
+try:
+    from pytest_homeassistant_custom_component.common import async_fire_time_changed
+except ImportError:
+    from homeassistant.util.dt import utcnow as async_fire_time_changed
 
 
 async def test_sensors_created(
@@ -214,3 +226,56 @@ async def test_device_info(
     assert device is not None
     assert device.manufacturer == "Ghost Foundation"
     assert device.model == "Ghost"
+
+
+async def test_mrr_sensor_no_data(
+    hass: HomeAssistant, mock_ghost_api: AsyncMock, mock_config_entry
+) -> None:
+    """Test MRR sensor when no MRR data available."""
+    mock_config_entry.add_to_hass(hass)
+
+    # Return empty MRR data
+    mock_ghost_api.get_mrr.return_value = {}
+
+    with (
+        patch("custom_components.ghost.GhostAdminAPI", return_value=mock_ghost_api),
+        patch("custom_components.ghost.coordinator.GhostAdminAPI", return_value=mock_ghost_api),
+    ):
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await hass.async_block_till_done()
+
+    state = hass.states.get("sensor.test_ghost_mrr")
+    assert state is not None
+    assert state.state == "unknown"
+
+
+async def test_newsletter_sensor_not_found(
+    hass: HomeAssistant, mock_ghost_api: AsyncMock, mock_config_entry
+) -> None:
+    """Test newsletter sensor when newsletter is removed."""
+    mock_config_entry.add_to_hass(hass)
+
+    with (
+        patch("custom_components.ghost.GhostAdminAPI", return_value=mock_ghost_api),
+        patch("custom_components.ghost.coordinator.GhostAdminAPI", return_value=mock_ghost_api),
+    ):
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await hass.async_block_till_done()
+
+        # Verify newsletter sensor exists
+        state = hass.states.get("sensor.test_ghost_weekly_subscribers")
+        assert state is not None
+        assert state.state == "800"
+
+        # Now return empty newsletters list
+        mock_ghost_api.get_newsletters.return_value = []
+
+        # Trigger coordinator refresh
+        coordinator = mock_config_entry.runtime_data.coordinator
+        await coordinator.async_refresh()
+        await hass.async_block_till_done()
+
+        # Sensor should now be unknown (newsletter not found)
+        state = hass.states.get("sensor.test_ghost_weekly_subscribers")
+        assert state is not None
+        assert state.state == "unknown"
