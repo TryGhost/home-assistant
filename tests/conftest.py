@@ -18,10 +18,15 @@ API_KEY = (
 )
 
 
+@pytest.fixture(autouse=True)
+def auto_enable_custom_integrations(enable_custom_integrations):
+    """Enable custom integrations for all tests."""
+    yield
+
+
 @pytest.fixture
 def mock_config_entry(hass: HomeAssistant):
     """Return a mock config entry."""
-    from homeassistant.config_entries import ConfigEntry
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     return MockConfigEntry(
