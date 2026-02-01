@@ -5,7 +5,7 @@
         "title": "Connect to Ghost",
         "description": "[Create a custom integration in Ghost]({docs_url}) to get your Admin API key.",
         "data": {
-          "url": "Site URL",
+          "url": "API URL",
           "admin_api_key": "Admin API Key"
         },
         "data_description": {
