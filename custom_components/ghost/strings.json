@@ -7,6 +7,10 @@
         "data": {
           "api_url": "API URL",
           "admin_api_key": "Admin API Key"
+        },
+        "data_description": {
+          "api_url": "The URL of your Ghost site (e.g., https://yoursite.ghost.io)",
+          "admin_api_key": "Found in Ghost Admin → Settings → Integrations → Add custom integration"
         }
       },
       "reauth_confirm": {
@@ -14,6 +18,9 @@
         "description": "Your Ghost API key is invalid or expired. Please enter a new Admin API key.",
         "data": {
           "admin_api_key": "Admin API Key"
+        },
+        "data_description": {
+          "admin_api_key": "Found in Ghost Admin → Settings → Integrations → Add custom integration"
         }
       }
     },

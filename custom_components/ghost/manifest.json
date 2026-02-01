@@ -1,11 +1,12 @@
 {
   "domain": "ghost",
   "name": "Ghost",
-  "codeowners": ["@TryGhost"],
+  "codeowners": ["@johnonolan"],
   "config_flow": true,
-  "documentation": "https://ghost.org/integrations/home-assistant/",
+  "documentation": "https://www.home-assistant.io/integrations/ghost",
   "integration_type": "service",
   "iot_class": "cloud_polling",
+  "loggers": ["aioghost"],
   "requirements": ["aioghost==0.2.0"],
-  "version": "0.2.0"
+  "version": "0.3.0"
 }
