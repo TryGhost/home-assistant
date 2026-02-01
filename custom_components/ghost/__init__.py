@@ -80,21 +80,12 @@ async def _setup_webhooks(
     
     _LOGGER.info("Setting up Ghost webhooks to %s", ha_webhook_url)
     
-    # Get the integration ID for creating webhooks
-    try:
-        integration_id = await api.get_integration_id()
-        if not integration_id:
-            _LOGGER.error("Could not find integration ID for API key")
-            return
-    except Exception as err:
-        _LOGGER.error("Failed to get integration ID: %s", err)
-        return
-    
     # Create webhooks in Ghost for each event type
+    # Ghost auto-associates webhooks with the integration owning the API key
     ghost_webhook_ids = []
     for event in WEBHOOK_EVENTS:
         try:
-            webhook = await api.create_webhook(event, ha_webhook_url, integration_id)
+            webhook = await api.create_webhook(event, ha_webhook_url)
             webhook_id = webhook.get("id")
             if webhook_id:
                 ghost_webhook_ids.append(webhook_id)

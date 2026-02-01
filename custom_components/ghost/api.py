@@ -216,8 +216,12 @@ class GhostAdminAPI:
         
         return stats
 
-    async def create_webhook(self, event: str, target_url: str, integration_id: str) -> dict:
-        """Create a webhook in Ghost."""
+    async def create_webhook(self, event: str, target_url: str) -> dict:
+        """Create a webhook in Ghost.
+        
+        Ghost automatically associates the webhook with the integration
+        that owns the API key being used.
+        """
         session = await self._get_session()
         token = self._generate_token()
         
@@ -232,7 +236,6 @@ class GhostAdminAPI:
             "webhooks": [{
                 "event": event,
                 "target_url": target_url,
-                "integration_id": integration_id,
             }]
         }
         
@@ -254,21 +257,6 @@ class GhostAdminAPI:
         
         async with session.delete(url, headers=headers) as response:
             response.raise_for_status()
-
-    async def get_integration_id(self) -> str | None:
-        """Get the integration ID associated with the current API key."""
-        # The key ID is the first part of the admin_api_key
-        key_id = self.admin_api_key.split(":")[0]
-        
-        # Fetch integrations to find which one owns this key
-        data = await self._request("/ghost/api/admin/integrations/", {"include": "api_keys"})
-        
-        for integration in data.get("integrations", []):
-            for api_key in integration.get("api_keys", []):
-                if api_key.get("id") == key_id:
-                    return integration.get("id")
-        
-        return None
 
     async def validate_credentials(self) -> bool:
         """Validate the API credentials."""
