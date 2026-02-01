@@ -13,15 +13,8 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-# Events we care about and will register webhooks for
-WEBHOOK_EVENTS = [
-    "member.added",
-    "member.deleted",
-    "post.published",
-    "post.unpublished",
-    "page.published",
-    "page.unpublished",
-]
+# Events we care about - imported from const
+from .const import WEBHOOK_EVENTS
 
 
 def get_webhook_id(entry_id: str) -> str:
@@ -81,12 +74,12 @@ async def handle_webhook(
         current = member.get("current", {})
         previous = member.get("previous", {})
         
-        if previous.get("id") is None and current.get("id"):
+        if not previous or previous.get("id") is None:
             event_type = "ghost_member_added"
-        elif current.get("id") is None and previous.get("id"):
+        elif not current or current.get("id") is None:
             event_type = "ghost_member_deleted"
         else:
-            event_type = "ghost_member_updated"
+            event_type = "ghost_member_edited"
         
         # Include useful member data
         member_data = current or previous

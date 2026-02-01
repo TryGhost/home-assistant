@@ -7,13 +7,11 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_URL, Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.network import get_url
+from homeassistant.helpers.network import get_url, NoURLAvailableError
 
 from .api import GhostAdminAPI
 from .const import (
     CONF_ADMIN_API_KEY,
-    CONF_ENABLE_WEBHOOKS,
-    CONF_WEBHOOK_URL,
     DOMAIN,
     WEBHOOK_EVENTS,
 )
@@ -26,14 +24,26 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 # Store webhook IDs created in Ghost for cleanup
 GHOST_WEBHOOK_IDS = "ghost_webhook_ids"
+WEBHOOKS_ENABLED = "webhooks_enabled"
+
+
+def _get_external_url(hass: HomeAssistant) -> str | None:
+    """Try to get an external URL for webhooks."""
+    try:
+        # This will return Nabu Casa URL if available, or configured external URL
+        url = get_url(hass, allow_internal=False, prefer_cloud=True)
+        # Only use HTTPS URLs for webhooks
+        if url and url.startswith("https://"):
+            return url
+    except NoURLAvailableError:
+        pass
+    return None
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Ghost from a config entry."""
     site_url = entry.data[CONF_URL]
     admin_api_key = entry.data[CONF_ADMIN_API_KEY]
-    enable_webhooks = entry.data.get(CONF_ENABLE_WEBHOOKS, False)
-    webhook_url = entry.data.get(CONF_WEBHOOK_URL)
 
     api = GhostAdminAPI(site_url, admin_api_key)
     
@@ -53,11 +63,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = {
         "coordinator": coordinator,
         GHOST_WEBHOOK_IDS: [],
+        WEBHOOKS_ENABLED: False,
     }
 
-    # Set up webhooks if enabled
-    if enable_webhooks and webhook_url:
-        await _setup_webhooks(hass, entry, api, site_title, webhook_url)
+    # Auto-detect external URL and silently enable webhooks if available
+    external_url = _get_external_url(hass)
+    if external_url:
+        await _setup_webhooks(hass, entry, api, site_title, external_url)
+        hass.data[DOMAIN][entry.entry_id][WEBHOOKS_ENABLED] = True
+    else:
+        _LOGGER.debug("No external URL available, webhooks disabled for %s", site_title)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -113,8 +128,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             except Exception as err:
                 _LOGGER.warning("Failed to delete Ghost webhook %s: %s", webhook_id, err)
         
-        # Unregister HA webhook
-        if entry.data.get(CONF_ENABLE_WEBHOOKS):
+        # Unregister HA webhook if it was enabled
+        if entry_data.get(WEBHOOKS_ENABLED):
             async_unregister_webhook(hass, entry.entry_id)
         
         await coordinator.api.close()

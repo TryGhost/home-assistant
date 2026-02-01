@@ -12,25 +12,11 @@
           "url": "The URL of your Ghost site (e.g., https://example.com)",
           "admin_api_key": "Your Admin API key in the format id:secret"
         }
-      },
-      "webhooks": {
-        "title": "Real-time Events",
-        "description": "Enable webhooks to receive real-time events from {site_title} (new members, published posts, etc.).\n\nThis requires your Home Assistant to be accessible from the internet.",
-        "data": {
-          "enable_webhooks": "Enable real-time events",
-          "webhook_url": "Home Assistant external URL"
-        },
-        "data_description": {
-          "enable_webhooks": "Receive instant notifications when members join or content is published",
-          "webhook_url": "Your HA external URL (e.g., https://my-home.duckdns.org)"
-        }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to Ghost. Please check your URL and API key.",
-      "invalid_api_key": "Invalid API key format. The key should be in the format id:secret.",
-      "webhook_url_required": "External URL is required when webhooks are enabled.",
-      "webhook_url_https": "External URL must use HTTPS for webhooks to work."
+      "invalid_api_key": "Invalid API key format. The key should be in the format id:secret."
     },
     "abort": {
       "already_configured": "This Ghost site is already configured."
