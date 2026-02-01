@@ -120,8 +120,8 @@ class GhostSensorEntity(CoordinatorEntity[GhostDataUpdateCoordinator], SensorEnt
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry.entry_id)},
             "name": coordinator.site_title,
-            "manufacturer": "Ghost Foundation",
-            "model": "Ghost CMS",
+            "manufacturer": "Ghost",
+            "model": "Ghost",
             "configuration_url": coordinator.api.site_url,
         }
 
