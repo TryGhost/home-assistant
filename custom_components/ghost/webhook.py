@@ -89,30 +89,30 @@ async def handle_webhook(
         _LOGGER.error("Failed to parse webhook payload: %s", err)
         return web.Response(status=400, text="Invalid JSON")
 
-    # Extract event info from Ghost webhook payload
-    # Ghost sends the event type in the payload structure
-    # The payload contains the resource that triggered it (e.g., member, post)
+    # Extract event info from Ghost webhook payload.
+    # Ghost sends the event type in the payload structure.
+    # The payload contains the resource that triggered it (e.g., member, post).
 
     event_type = None
     event_data: dict[str, Any] = {"webhook_id": webhook_id}
 
-    # Determine event type from payload structure
+    # Determine event type from payload structure.
     if "member" in payload:
         member = payload["member"]
         current = member.get("current", {})
         previous = member.get("previous", {})
 
         # Ghost webhook logic:
-        # - member.added: current has data, previous is empty {}
-        # - member.deleted: current is empty {}, previous has data
-        # - member.edited: ignored (too high volume - fires on email opens/clicks)
+        # - member.added: current has data, previous is empty {}.
+        # - member.deleted: current is empty {}, previous has data.
+        # - member.edited: ignored (too high volume - fires on email opens/clicks).
         if not current:
             event_type = "ghost_member_deleted"
         elif not previous:
             event_type = "ghost_member_added"
-        # else: member.edited - intentionally ignored
+        # else: member.edited - intentionally ignored.
 
-        # Include useful member data (only for add/delete)
+        # Include useful member data (only for add/delete).
         if event_type:
             member_data = current or previous
             event_data.update(

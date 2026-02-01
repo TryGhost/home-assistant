@@ -22,7 +22,7 @@ from .coordinator import GhostDataUpdateCoordinator
 if TYPE_CHECKING:
     from . import GhostConfigEntry
 
-# Coordinator handles batching, no limit needed
+# Coordinator handles batching, no limit needed.
 PARALLEL_UPDATES = 0
 
 
@@ -262,7 +262,7 @@ async def async_setup_entry(
         GhostSensorEntity(coordinator, description, entry) for description in SENSORS
     ]
 
-    # Add dynamic newsletter sensors (active only)
+    # Add dynamic newsletter sensors (active only).
     for newsletter in coordinator.data.get("newsletters", []):
         newsletter_id = newsletter.get("id")
         newsletter_name = newsletter.get("name", "Newsletter")
