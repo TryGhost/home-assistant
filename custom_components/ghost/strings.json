@@ -29,6 +29,9 @@
       "free_members": {
         "name": "Free Members"
       },
+      "comped_members": {
+        "name": "Comped Members"
+      },
       "published_posts": {
         "name": "Published Posts"
       },

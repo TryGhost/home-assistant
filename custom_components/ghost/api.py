@@ -99,37 +99,23 @@ class GhostAdminAPI:
         }
 
     async def get_members_count(self) -> dict:
-        """Get member counts."""
-        # Total members
-        total = await self._request(
-            "/ghost/api/admin/members/",
-            {"limit": 1},
-        )
+        """Get member counts from stats endpoint."""
+        data = await self._request("/ghost/api/admin/members/stats/count/")
         
-        # Paid members
-        paid = await self._request(
-            "/ghost/api/admin/members/",
-            {"limit": 1, "filter": "status:paid"},
-        )
+        # Get total from response and latest day's breakdown
+        total = data.get("total", 0)
+        history = data.get("data", [])
         
-        # Free members
-        free = await self._request(
-            "/ghost/api/admin/members/",
-            {"limit": 1, "filter": "status:free"},
-        )
+        if history:
+            latest = history[-1]
+            return {
+                "total": total,
+                "paid": latest.get("paid", 0),
+                "free": latest.get("free", 0),
+                "comped": latest.get("comped", 0),
+            }
         
-        # Comped members
-        comped = await self._request(
-            "/ghost/api/admin/members/",
-            {"limit": 1, "filter": "status:comped"},
-        )
-        
-        return {
-            "total": total.get("meta", {}).get("pagination", {}).get("total", 0),
-            "paid": paid.get("meta", {}).get("pagination", {}).get("total", 0),
-            "free": free.get("meta", {}).get("pagination", {}).get("total", 0),
-            "comped": comped.get("meta", {}).get("pagination", {}).get("total", 0),
-        }
+        return {"total": total, "paid": 0, "free": 0, "comped": 0}
 
     async def get_latest_post(self) -> dict | None:
         """Get the most recently published post."""

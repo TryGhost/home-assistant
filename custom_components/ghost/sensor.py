@@ -66,6 +66,14 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         value_fn=lambda data: data.get("members", {}).get("free", 0),
     ),
     GhostSensorEntityDescription(
+        key="comped_members",
+        translation_key="comped_members",
+        name="Comped Members",
+        icon="mdi:account-star",
+        state_class=SensorStateClass.TOTAL,
+        value_fn=lambda data: data.get("members", {}).get("comped", 0),
+    ),
+    GhostSensorEntityDescription(
         key="published_posts",
         translation_key="published_posts",
         name="Published Posts",
@@ -167,6 +175,7 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.TOTAL,
         native_unit_of_measurement="USD",
+        suggested_display_precision=0,
         value_fn=lambda data: _get_mrr_value(data),
     ),
     GhostSensorEntityDescription(
@@ -177,6 +186,7 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.TOTAL,
         native_unit_of_measurement="USD",
+        suggested_display_precision=0,
         value_fn=lambda data: _get_mrr_value(data) * 12 if _get_mrr_value(data) else None,
     ),
 )
