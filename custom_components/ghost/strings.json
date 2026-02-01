@@ -68,6 +68,9 @@
       "socialweb_following": {
         "name": "SocialWeb Following"
       },
+      "total_comments": {
+        "name": "Total Comments"
+      },
       "mrr": {
         "name": "MRR"
       },

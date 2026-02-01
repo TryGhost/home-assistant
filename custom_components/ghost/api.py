@@ -173,6 +173,22 @@ class GhostAdminAPI:
         
         return None
 
+    async def get_comments_count(self) -> int:
+        """Get total comments count."""
+        data = await self._request(
+            "/ghost/api/admin/comments/",
+            {"limit": 1},
+        )
+        return data.get("meta", {}).get("pagination", {}).get("total", 0)
+
+    async def get_newsletters(self) -> list:
+        """Get newsletters with subscriber counts."""
+        data = await self._request(
+            "/ghost/api/admin/newsletters/",
+            {"include": "count.members"},
+        )
+        return data.get("newsletters", [])
+
     async def get_mrr(self) -> dict:
         """Get MRR (Monthly Recurring Revenue) data.
         

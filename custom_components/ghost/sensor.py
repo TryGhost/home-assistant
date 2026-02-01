@@ -168,6 +168,14 @@ SENSORS: tuple[GhostSensorEntityDescription, ...] = (
         value_fn=lambda data: data.get("activitypub", {}).get("following", 0),
     ),
     GhostSensorEntityDescription(
+        key="total_comments",
+        translation_key="total_comments",
+        name="Total Comments",
+        icon="mdi:comment-multiple",
+        state_class=SensorStateClass.TOTAL,
+        value_fn=lambda data: data.get("comments", 0),
+    ),
+    GhostSensorEntityDescription(
         key="mrr",
         translation_key="mrr",
         name="MRR",
@@ -200,10 +208,24 @@ async def async_setup_entry(
     """Set up Ghost sensors based on a config entry."""
     coordinator: GhostDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     
-    async_add_entities(
+    entities = [
         GhostSensorEntity(coordinator, description, entry)
         for description in SENSORS
-    )
+    ]
+    
+    # Add dynamic newsletter sensors
+    newsletters = coordinator.data.get("newsletters", [])
+    for newsletter in newsletters:
+        newsletter_id = newsletter.get("id")
+        newsletter_name = newsletter.get("name", "Newsletter")
+        if newsletter_id:
+            entities.append(
+                GhostNewsletterSensorEntity(
+                    coordinator, entry, newsletter_id, newsletter_name
+                )
+            )
+    
+    async_add_entities(entities)
 
 
 class GhostSensorEntity(CoordinatorEntity[GhostDataUpdateCoordinator], SensorEntity):
@@ -259,5 +281,56 @@ class GhostSensorEntity(CoordinatorEntity[GhostDataUpdateCoordinator], SensorEnt
                     "failed": email.get("failed_count"),
                     "open_rate": email.get("open_rate"),
                     "click_rate": email.get("click_rate"),
+                }
+        return None
+
+
+class GhostNewsletterSensorEntity(CoordinatorEntity[GhostDataUpdateCoordinator], SensorEntity):
+    """Representation of a Ghost newsletter subscriber sensor."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:email-newsletter"
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(
+        self,
+        coordinator: GhostDataUpdateCoordinator,
+        entry: ConfigEntry,
+        newsletter_id: str,
+        newsletter_name: str,
+    ) -> None:
+        """Initialize the newsletter sensor."""
+        super().__init__(coordinator)
+        self._newsletter_id = newsletter_id
+        self._newsletter_name = newsletter_name
+        self._attr_unique_id = f"{entry.entry_id}_newsletter_{newsletter_id}"
+        self._attr_name = f"{newsletter_name} Subscribers"
+        self._attr_device_info = {
+            "identifiers": {(DOMAIN, entry.entry_id)},
+            "name": coordinator.site_title,
+            "manufacturer": "Ghost Foundation",
+            "model": "Ghost",
+            "configuration_url": coordinator.api.site_url,
+        }
+
+    @property
+    def native_value(self) -> int | None:
+        """Return the subscriber count for this newsletter."""
+        newsletters = self.coordinator.data.get("newsletters", [])
+        for newsletter in newsletters:
+            if newsletter.get("id") == self._newsletter_id:
+                count = newsletter.get("count", {})
+                return count.get("members", 0)
+        return None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return extra state attributes."""
+        newsletters = self.coordinator.data.get("newsletters", [])
+        for newsletter in newsletters:
+            if newsletter.get("id") == self._newsletter_id:
+                return {
+                    "newsletter_id": self._newsletter_id,
+                    "status": newsletter.get("status"),
                 }
         return None
